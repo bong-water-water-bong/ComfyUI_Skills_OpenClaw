@@ -143,7 +143,8 @@ def create_app() -> FastAPI:
         if server is None:
             raise HTTPException(status_code=404, detail=f"Server '{server_id}' not found")
         url = server.get("url", "")
-        online = (await asyncio.to_thread(check_server_health, url)) if url else False
+        auth = server.get("auth", "")
+        online = (await asyncio.to_thread(check_server_health, url, auth)) if url else False
         return {"server_id": server_id, "status": "online" if online else "offline", "url": url}
 
     # ── Workflow CRUD ─────────────────────────────────────────────
