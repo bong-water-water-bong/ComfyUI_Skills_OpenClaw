@@ -404,7 +404,7 @@ Default import behavior:
 - [ ] Guided workflow rewrite recipes for agents
 - [ ] Workflow version history and rollback
 - [ ] Better schema validation before queueing
-- [ ] Richer error reporting from ComfyUI node errors
+- [x] Richer error reporting from ComfyUI node errors
 - [ ] Optional batch generation / multi-seed helpers
 
 ---
