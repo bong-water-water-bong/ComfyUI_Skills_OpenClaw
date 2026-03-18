@@ -216,13 +216,12 @@ class EditorWorkflowConverter:
         for link in links:
             if not isinstance(link, list) or len(link) < 5:
                 continue
-            source_node_id = self._resolve_link_source(int(link[1]), int(link[2]), node_by_id, links)
-            source_slot = int(link[2])
+            source_link = self._resolve_link_source(int(link[1]), int(link[2]), node_by_id, links)
             target_node_id = int(link[3])
             target_slot = int(link[4])
-            if source_node_id is None:
+            if source_link is None:
                 continue
-            link_map[(target_node_id, target_slot)] = (source_node_id, source_slot)
+            link_map[(target_node_id, target_slot)] = source_link
 
         api_workflow: dict[str, Any] = {}
         for node in nodes:
@@ -258,14 +257,14 @@ class EditorWorkflowConverter:
         source_slot: int,
         node_by_id: dict[int, dict[str, Any]],
         links: list[Any],
-    ) -> str | None:
+    ) -> tuple[str, int] | None:
         node = node_by_id.get(source_node_id)
         if not isinstance(node, dict):
-            return str(source_node_id)
+            return (str(source_node_id), source_slot)
 
         class_type = normalize_string(node.get("type"))
         if class_type != "Reroute":
-            return str(source_node_id)
+            return (str(source_node_id), source_slot)
 
         input_slots = _list_value(node.get("inputs"))
         if not input_slots:

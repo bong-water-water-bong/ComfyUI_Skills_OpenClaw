@@ -49,8 +49,7 @@ class ComfyUIServerAPI:
                 if response.status_code >= 400:
                     continue
                 paths = self._extract_json_paths(response.json())
-                if paths:
-                    return paths
+                return paths
             except (requests.RequestException, ValueError) as exc:
                 last_error = exc
 

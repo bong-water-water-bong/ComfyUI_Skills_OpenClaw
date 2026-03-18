@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
+
+from ui.comfyui_userdata import ComfyUIServerAPI
 
 from ui.workflow_import import (
     EditorWorkflowConverter,
@@ -104,6 +106,50 @@ class WorkflowImportTests(unittest.TestCase):
         self.assertEqual(converted["3"]["inputs"]["model"], ["1", 0])
         self.assertEqual(converted["3"]["inputs"]["positive"], ["2", 0])
 
+    def test_editor_workflow_converter_preserves_output_slot_through_reroute(self) -> None:
+        object_info = {
+            "CheckpointLoaderSimple": {
+                "required": {
+                    "ckpt_name": [["model.safetensors"]],
+                },
+            },
+            "CLIPTextEncode": {
+                "required": {
+                    "text": ["STRING"],
+                    "clip": ["CLIP"],
+                },
+            },
+        }
+        editor_workflow = {
+            "nodes": [
+                {
+                    "id": 1,
+                    "type": "CheckpointLoaderSimple",
+                    "inputs": [],
+                    "widgets_values": ["model.safetensors"],
+                },
+                {
+                    "id": 4,
+                    "type": "Reroute",
+                    "inputs": [{"name": "", "link": 1}],
+                },
+                {
+                    "id": 2,
+                    "type": "CLIPTextEncode",
+                    "inputs": [{"name": "clip"}],
+                    "widgets_values": ["a portrait"],
+                },
+            ],
+            "links": [
+                [1, 1, 1, 4, 0, "CLIP"],
+                [2, 4, 0, 2, 0, "CLIP"],
+            ],
+        }
+
+        converted = EditorWorkflowConverter(object_info).convert(editor_workflow)
+
+        self.assertEqual(converted["2"]["inputs"]["clip"], ["1", 1])
+
     def test_schema_extraction_and_final_schema_follow_recommended_rules(self) -> None:
         workflow_data = {
             "2": {
@@ -153,6 +199,15 @@ class WorkflowImportTests(unittest.TestCase):
         importer.import_from_comfyui()
 
         api_class.assert_called_once_with("http://127.0.0.1:8188", "Bearer secret-token")
+
+    def test_list_workflow_paths_returns_empty_list_for_empty_payload(self) -> None:
+        api = ComfyUIServerAPI("http://127.0.0.1:8188")
+        response = Mock()
+        response.status_code = 200
+        response.json.return_value = []
+        api.session.get = Mock(return_value=response)
+
+        self.assertEqual(api.list_workflow_paths(), [])
 
 
 if __name__ == "__main__":
