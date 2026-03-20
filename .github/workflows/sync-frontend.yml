@@ -5,8 +5,6 @@ on:
   repository_dispatch:
     types:
       - frontend_release_published
-  schedule:
-    - cron: "17 */3 * * *"
 
 concurrency:
   group: sync-frontend
