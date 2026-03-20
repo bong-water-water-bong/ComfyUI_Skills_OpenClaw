@@ -7,7 +7,7 @@
   </a>
 </p>
 
-<a href="https://www.bilibili.com/video/BV1a6cUzVEE6/" target="_blank"><strong>▶ Demo Video (Bilibili)</strong></a>
+**[▶ Demo Video (Bilibili)](https://www.bilibili.com/video/BV1a6cUzVEE6/)**
 
 This project is a ComfyUI skill integration layer for OpenClaw, Codex, and Claude Code. It turns the workflows you build and export from ComfyUI in API format into callable skills that these agents can trigger with natural language.
 
