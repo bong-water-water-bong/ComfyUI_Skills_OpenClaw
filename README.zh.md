@@ -1,6 +1,6 @@
 # ComfyUI Skills for OpenClaw
 
-![ComfyUI Skills Banner](./asset/banner-ui-20250309.jpg)
+![ComfyUI Skills Banner](./asset/banner-ui-dashboard-20260322.png)
 
 **[▶ 演示视频（Bilibili）](https://www.bilibili.com/video/BV1a6cUzVEE6/)**
 
@@ -431,7 +431,7 @@ ComfyUI_Skills_OpenClaw/
 ├── config.example.json         # 配置示例
 ├── config.json                 # 本地实际配置（默认 gitignore）
 ├── asset/
-│   └── banner-ui-20250309.jpg
+│   └── banner-ui-dashboard-20260322.png
 ├── data/
 │   ├── <server_id>/
 │   │   └── <workflow_id>/

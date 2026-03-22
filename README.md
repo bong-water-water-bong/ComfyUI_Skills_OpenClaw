@@ -1,6 +1,6 @@
 # ComfyUI Skills for OpenClaw
 
-![ComfyUI Skills Banner](./asset/banner-ui-20250309.jpg)
+![ComfyUI Skills Banner](./asset/banner-ui-dashboard-20260322.png)
 <p>
   <a href="./README.zh.md">
     <img src="https://img.shields.io/badge/简体中文-README.zh.md-blue?style=flat-square" alt="简体中文" />
@@ -433,7 +433,7 @@ ComfyUI_Skills_OpenClaw/
 ├── config.example.json         # Example runtime config
 ├── config.json                 # Actual local runtime config (gitignored)
 ├── asset/
-│   └── banner-ui-20250309.jpg
+│   └── banner-ui-dashboard-20260322.png
 ├── data/
 │   ├── <server_id>/
 │   │   └── <workflow_id>/
