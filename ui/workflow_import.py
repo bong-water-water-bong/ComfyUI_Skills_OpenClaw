@@ -73,6 +73,44 @@ class BulkImportReport:
         }
 
 
+@dataclass(slots=True)
+class BulkImportPreviewItem:
+    workflow_id: str
+    final_workflow_id: str
+    source_label: str
+    description: str
+    status: str
+    reason: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "workflow_id": self.workflow_id,
+            "final_workflow_id": self.final_workflow_id,
+            "source_label": self.source_label,
+            "description": self.description,
+            "status": self.status,
+            "reason": self.reason,
+        }
+
+
+@dataclass(slots=True)
+class BulkImportPreviewReport:
+    items: list[BulkImportPreviewItem] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
+        summary = {
+            "ready": sum(1 for item in self.items if item.status == "ready"),
+            "renamed": sum(1 for item in self.items if item.status == "renamed"),
+            "failed": sum(1 for item in self.items if item.status == "failed"),
+            "importable": sum(1 for item in self.items if item.status in {"ready", "renamed"}),
+            "total": len(self.items),
+        }
+        return {
+            "summary": summary,
+            "items": [item.to_dict() for item in self.items],
+        }
+
+
 class WorkflowBulkImporter:
     def __init__(self, service: UIStorageService, server_id: str):
         self.service = service
@@ -139,6 +177,30 @@ class WorkflowBulkImporter:
 
         return report
 
+    def preview_from_comfyui(self) -> BulkImportPreviewReport:
+        api = self._build_server_api()
+        workflow_paths = api.list_workflow_paths()
+        report = BulkImportPreviewReport()
+        reserved_ids: set[str] = set()
+
+        for workflow_path in workflow_paths:
+            try:
+                workflow_data = api.read_workflow_json(workflow_path)
+            except ComfyUIClientError as exc:
+                report.items.append(BulkImportPreviewItem("", "", workflow_path, "", "failed", str(exc)))
+                continue
+
+            report.items.append(
+                self._preview_one(
+                    workflow_data=workflow_data,
+                    source_label=workflow_path,
+                    reserved_ids=reserved_ids,
+                    file_name=PurePosixPath(workflow_path).name,
+                ),
+            )
+
+        return report
+
     def _import_one(
         self,
         workflow_data: Any,
@@ -166,6 +228,32 @@ class WorkflowBulkImporter:
             return BulkImportItem(suggested_id, final_workflow_id, source_label, status)
         except (WorkflowImportError, FileExistsError, ValueError) as exc:
             return BulkImportItem("", "", source_label, "failed", str(exc))
+
+    def _preview_one(
+        self,
+        workflow_data: Any,
+        source_label: str,
+        reserved_ids: set[str],
+        file_name: str = "",
+    ) -> BulkImportPreviewItem:
+        if not isinstance(workflow_data, dict):
+            return BulkImportPreviewItem("", "", source_label, "", "failed", "Workflow JSON must be an object.")
+
+        try:
+            normalized_workflow = self._normalize_workflow_payload(workflow_data)
+            suggested_id = suggest_workflow_id(normalized_workflow, file_name)
+            final_workflow_id = self.service.next_available_workflow_id(self.server_id, suggested_id, reserved_ids)
+            reserved_ids.add(final_workflow_id)
+            status = "ready" if final_workflow_id == suggested_id else "renamed"
+            return BulkImportPreviewItem(
+                suggested_id,
+                final_workflow_id,
+                source_label,
+                self._suggest_description(workflow_data, normalized_workflow, source_label),
+                status,
+            )
+        except (WorkflowImportError, FileExistsError, ValueError) as exc:
+            return BulkImportPreviewItem("", "", source_label, "", "failed", str(exc))
 
     def _save_imported_workflow(
         self,
@@ -254,6 +342,8 @@ class WorkflowBulkImporter:
 
 __all__ = [
     "BulkImportItem",
+    "BulkImportPreviewItem",
+    "BulkImportPreviewReport",
     "BulkImportReport",
     "ComfyUIClientError",
     "ComfyUIServerAPI",

@@ -302,6 +302,16 @@ def create_app() -> FastAPI:
         except (RuntimeError, ValueError) as e:
             raise HTTPException(status_code=400, detail=str(e)) from e
 
+    @app.get("/api/servers/{server_id}/workflows/import/comfyui/preview")
+    async def preview_workflows_from_comfyui(server_id: str) -> dict:
+        try:
+            preview = service.preview_workflows_from_comfyui(server_id)
+            return {"status": "success", "preview": preview}
+        except FileNotFoundError as e:
+            raise HTTPException(status_code=404, detail=str(e)) from e
+        except (RuntimeError, ValueError) as e:
+            raise HTTPException(status_code=400, detail=str(e)) from e
+
     @app.post("/api/servers/{server_id}/workflows/import/local")
     async def import_local_workflows(server_id: str, data: LocalWorkflowImportModel) -> dict:
         try:
