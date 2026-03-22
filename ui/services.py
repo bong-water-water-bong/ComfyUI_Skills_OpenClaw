@@ -415,6 +415,10 @@ class UIStorageService:
         importer = WorkflowBulkImporter(self, server_id)
         return importer.import_from_comfyui().to_dict()
 
+    def preview_workflows_from_comfyui(self, server_id: str) -> dict[str, Any]:
+        importer = WorkflowBulkImporter(self, server_id)
+        return importer.preview_from_comfyui().to_dict()
+
     def import_local_workflows(self, server_id: str, files: list[dict[str, str]]) -> dict[str, Any]:
         importer = WorkflowBulkImporter(self, server_id)
         return importer.import_local_files(files).to_dict()
