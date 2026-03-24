@@ -341,7 +341,8 @@ def execute_workflow_by_ids(server_id: str, workflow_id: str, input_args: dict[s
     if not queue_res or "prompt_id" not in queue_res:
         error_message = "Failed to queue prompt to ComfyUI."
         if queue_res:
-            error_message = queue_res.get("error", error_message)
+            raw_error = queue_res.get("error", error_message)
+            error_message = raw_error.get("message", str(raw_error)) if isinstance(raw_error, dict) else str(raw_error)
             node_errors = queue_res.get("node_errors", {})
             if isinstance(node_errors, dict) and node_errors:
                 error_message += "\n" + format_node_errors(node_errors)

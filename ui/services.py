@@ -45,6 +45,20 @@ def _read_json(path: Path, fallback: Any = None) -> Any:
         return fallback
 
 
+def _migrate_image_types(params: dict[str, Any], workflow_data: dict[str, Any]) -> None:
+    """Upgrade legacy schemas: set type='image' for LoadImage image fields."""
+    for param in params.values():
+        if not isinstance(param, dict) or param.get("type") == "image":
+            continue
+        node_id = str(param.get("node_id", ""))
+        field = param.get("field", "")
+        node_class = param.get("nodeClass", "")
+        if not node_class and node_id in workflow_data:
+            node_class = str(workflow_data[node_id].get("class_type", ""))
+        if node_class == "LoadImage" and field == "image":
+            param["type"] = "image"
+
+
 def _write_json(path: Path, data: Any) -> None:
     save_json(path, data)
 
@@ -263,14 +277,19 @@ class UIStorageService:
         if not isinstance(workflow_data, dict) or not isinstance(schema_data, dict):
             raise ValueError(f"Workflow data is invalid for {workflow_id}")
 
+        run_params = schema_data.get("parameters", {})
+        ui_params = schema_data.get("ui_parameters") or run_params
+        _migrate_image_types(run_params, workflow_data)
+        _migrate_image_types(ui_params, workflow_data)
+
         return {
             "workflow_id": workflow_id,
             "server_id": server_id,
             "description": str(schema_data.get("description") or ""),
             "enabled": bool(schema_data.get("enabled", True)),
             "workflow_data": workflow_data,
-            "schema_params": schema_data.get("ui_parameters") or schema_data.get("parameters", {}),
-            "run_schema_params": schema_data.get("parameters", {}),
+            "schema_params": ui_params,
+            "run_schema_params": run_params,
             "origin": str(schema_data.get("origin") or ""),
             "source_label": str(schema_data.get("source_label") or ""),
             "tags": [str(tag) for tag in schema_data.get("tags", [])] if isinstance(schema_data.get("tags"), list) else [],
