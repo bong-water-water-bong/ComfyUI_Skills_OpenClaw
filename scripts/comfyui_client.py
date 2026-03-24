@@ -365,8 +365,17 @@ def execute_workflow_by_ids(server_id: str, workflow_id: str, input_args: dict[s
             job_info = history[prompt_id]
             break
         if not is_job_in_queue(server_url, prompt_id, auth=server_auth):
-            print(json.dumps({"error": f"Job {prompt_id} disappeared from queue without producing results"}))
-            return
+            error_message = f"Job {prompt_id} disappeared from queue without producing results"
+            _finalize_record(
+                record,
+                server_id,
+                workflow_id,
+                status="error",
+                resolved_args=coerced_args,
+                prompt_id=prompt_id,
+                error_message=error_message,
+            )
+            return _build_error_payload(error_message, run_id)
         time.sleep(2)
 
     if not isinstance(job_info, dict):
