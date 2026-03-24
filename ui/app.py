@@ -6,7 +6,7 @@ import logging
 import sys
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse
@@ -54,6 +54,7 @@ except ImportError:
 
 from shared.health import check_server_health, test_server_connection
 from comfyui_client import execute_workflow_by_ids
+from shared.runtime_config import get_server_by_id
 from shared.transfer_bundle import (
     BundleValidationError,
     apply_bundle_import,
@@ -247,6 +248,47 @@ def create_app() -> FastAPI:
             raise HTTPException(status_code=500, detail=str(e)) from e
         result = await asyncio.to_thread(execute_workflow_by_ids, server_id, workflow_id, data.args)
         return {"status": result.get("status", "error"), "result": result}
+
+    @app.post("/api/servers/{server_id}/upload/image")
+    async def upload_image_to_comfyui(server_id: str, image: UploadFile = File(...)) -> dict:
+        server = get_server_by_id(server_id)
+        if not server:
+            raise HTTPException(status_code=404, detail=f"Server '{server_id}' not found")
+        server_url = str(server.get("url", "")).rstrip("/")
+        if not server_url:
+            raise HTTPException(status_code=400, detail="Server has no URL configured")
+        server_auth = str(server.get("auth", ""))
+
+        content = await image.read()
+
+        import urllib.request
+        import urllib.error
+
+        boundary = f"----ComfyUIBoundary{id(content)}"
+        filename = image.filename or "upload.png"
+        content_type = image.content_type or "image/png"
+        body = (
+            f"--{boundary}\r\n"
+            f'Content-Disposition: form-data; name="image"; filename="{filename}"\r\n'
+            f"Content-Type: {content_type}\r\n\r\n"
+        ).encode("utf-8") + content + f"\r\n--{boundary}--\r\n".encode("utf-8")
+
+        req = urllib.request.Request(
+            f"{server_url}/upload/image",
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+            method="POST",
+        )
+        if server_auth:
+            req.add_header("Authorization", f"Bearer {server_auth}")
+
+        try:
+            with urllib.request.urlopen(req) as resp:
+                return json.loads(resp.read())
+        except urllib.error.HTTPError as exc:
+            raise HTTPException(status_code=exc.code, detail="ComfyUI upload failed") from exc
+        except urllib.error.URLError as exc:
+            raise HTTPException(status_code=502, detail=f"Cannot connect to ComfyUI: {exc.reason}") from exc
 
     @app.get("/api/servers/{server_id}/workflow/{workflow_id}/history")
     async def list_workflow_history(server_id: str, workflow_id: str) -> dict:

@@ -59,6 +59,9 @@ def _get_auto_mapping(node_class: str, field: str, node_id: str) -> dict[str, An
     if node_class == "SaveImage" and field == "filename_prefix":
         return {"exposed": True, "required": False, "name": field, "description": "Output file prefix"}
 
+    if node_class == "LoadImage" and field == "image":
+        return {"exposed": True, "required": True, "name": f"image_{node_id}", "description": "Upload an image"}
+
     if node_class == "LightCCDoubaoImageNode":
         if field == "prompt":
             return {"exposed": True, "required": True, "name": field, "description": "Positive image prompt"}
@@ -102,7 +105,7 @@ def extract_schema_params(workflow_data: dict[str, Any]) -> dict[str, dict[str, 
                 "node_id": node_id,
                 "field": field,
                 "name": auto_mapping["name"],
-                "type": _get_type_guess(value),
+                "type": "image" if (node_class == "LoadImage" and field == "image") else _get_type_guess(value),
                 "required": auto_mapping["required"],
                 "description": auto_mapping["description"],
                 "default": value,
