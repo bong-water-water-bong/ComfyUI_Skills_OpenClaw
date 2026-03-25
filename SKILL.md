@@ -121,15 +121,53 @@ Pass the full identifier as `<server_id>/<workflow_id>`.
 
 > **Note**: Outer curly braces must be wrapped in single quotes to prevent bash from incorrectly parsing JSON double quotes.
 
+There are two execution modes. Choose based on your environment:
+
+- **Interactive** (chat, messaging, or any context where the user is waiting): use `submit` + `status` so you can send progress updates between polls.
+- **Non-interactive** (scripted pipelines, CI, or terminal-only): use the blocking one-shot mode for simplicity.
+
+#### Interactive mode: `submit` + `status`
+
+**Step 3a — Submit the job:**
+```bash
+python ./scripts/comfyui_client.py submit --workflow <server_id>/<workflow_id> --args '{"key1": "value1", "key2": 123}'
+```
+Returns immediately: `{"status": "submitted", "run_id": "...", "prompt_id": "..."}`.
+
+After receiving the response, tell the user that image generation has started.
+
+**Step 3b — Poll for progress:**
+```bash
+python ./scripts/comfyui_client.py status --workflow <server_id>/<workflow_id> --run-id <run_id>
+```
+Returns immediately with the current state:
+- `{"status": "queued", "queue_position": 2, "queue_total": 5}` — waiting in line
+- `{"status": "running", "elapsed_ms": 12000}` — ComfyUI is actively generating
+- `{"status": "success", "images": ["/path/to/image.png"]}` — done, images downloaded
+- `{"status": "error", "error": "..."}` — generation failed
+
+**Polling pattern — this is critical for real-time feedback:**
+
+Each `status` call must be a **separate tool invocation** (i.e., a separate bash command). Do NOT write a shell loop or combine multiple status checks into one command. The correct pattern is:
+
+1. Run `status` as a standalone bash command.
+2. Read the returned JSON.
+3. If `"queued"` or `"running"`: **send a text message to the user** with the current progress (e.g., "Queued at position 2…", "Generating, 12 seconds elapsed…"), then run `status` again as another standalone bash command.
+4. If `"success"`: proceed to Step 4.
+5. If `"error"`: report the error.
+
+This ensures each progress update is delivered to the user immediately, rather than being batched at the end.
+
+#### Non-interactive mode: one-shot blocking
+
 ```bash
 python ./scripts/comfyui_client.py --workflow <server_id>/<workflow_id> --args '{"key1": "value1", "key2": 123}'
 ```
+Blocks until ComfyUI finishes, then returns the full result.
 
-**Blocking and Result Retrieval**:
-- This script will automatically submit the task to the matched server and **poll to wait** for ComfyUI to finish rendering, then download the image locally.
-- If executed successfully, the standard output of the script will provide a JSON containing `run_id`, `prompt_id`, and an `images` list whose values are absolute local file paths.
-- If execution fails after a history record is created, the JSON may still include `run_id` together with `error`, which can be used to inspect the saved execution record through the manager UI/API.
-- Under the hood, this flow uses the native ComfyUI route sequence `POST /prompt` -> `GET /history/{prompt_id}` -> `GET /view`.
+**Result format (both modes)**:
+- On success: JSON with `run_id`, `prompt_id`, and an `images` list of absolute local file paths.
+- On error: JSON with `run_id` (if created) and `error` message.
 
 The manager stores execution history per workflow, including raw args, resolved args, prompt ID, result files, status, timing, and error summary. History records live under `data/<server_id>/<workflow_id>/history/`.
 
