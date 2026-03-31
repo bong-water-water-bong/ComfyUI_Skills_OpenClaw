@@ -49,6 +49,7 @@
 ### CLI 工具
 - 提供完整的命令行工具集，适合无界面环境或脚本化使用
 - 涵盖服务器管理、工作流查询、任务执行、配置导入导出四项核心操作
+- **[ComfyUI Skill CLI](https://github.com/HuangYuChuh/ComfyUI_Skill_CLI)** — 独立 CLI 工具，支持 `pip install`，所有命令输出 `--json` 结构化数据，适配 AI Agent 调用
 
 ## ComfyUI 原生 API 范围
 

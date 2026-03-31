@@ -52,6 +52,7 @@ For the upstream ComfyUI local server routes that back this skill, see [docs/com
 ### CLI Tools
 - A full set of command-line tools for headless environments and scripting
 - Covers server management, workflow listing, job execution, and configuration import/export
+- **[ComfyUI Skill CLI](https://github.com/HuangYuChuh/ComfyUI_Skill_CLI)** — standalone, `pip install` ready CLI with `--json` output for AI agents
 
 ## ComfyUI Native API Scope
 
