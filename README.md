@@ -92,6 +92,7 @@ cd comfyui-skill-openclaw
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -r requirements.txt
+pip install comfyui-skill-cli
 cp config.example.json config.json
 ```
 
@@ -114,9 +115,10 @@ Requirements:
 2. Clone this repository into `comfyui-skill-openclaw`.
 3. Keep SKILL.md at the project root.
 4. Install Python dependencies from requirements.txt.
-5. Run `cp config.example.json config.json`.
-6. Set the default ComfyUI server URL to http://127.0.0.1:8188 unless I specify another one.
-7. Make sure OpenClaw can discover and call this skill after installation.
+5. Install the CLI tool: `pip install comfyui-skill-cli`.
+6. Run `cp config.example.json config.json`.
+7. Set the default ComfyUI server URL to http://127.0.0.1:8188 unless I specify another one.
+8. Make sure OpenClaw can discover and call this skill after installation.
 ```
 
 </details>
@@ -133,6 +135,7 @@ cd comfyui-skill
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -r requirements.txt
+pip install comfyui-skill-cli
 cp config.example.json config.json
 ```
 
@@ -155,9 +158,10 @@ Requirements:
 2. Clone this repository into `comfyui-skill`.
 3. Keep SKILL.md at the project root.
 4. Install Python dependencies from requirements.txt.
-5. Run `cp config.example.json config.json`.
-6. Set the default ComfyUI server URL to http://127.0.0.1:8188 unless I specify another one.
-7. Make sure Claude Code can discover and call this skill after installation.
+5. Install the CLI tool: `pip install comfyui-skill-cli`.
+6. Run `cp config.example.json config.json`.
+7. Set the default ComfyUI server URL to http://127.0.0.1:8188 unless I specify another one.
+8. Make sure Claude Code can discover and call this skill after installation.
 ```
 
 </details>
@@ -174,6 +178,7 @@ cd comfyui-skill
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -r requirements.txt
+pip install comfyui-skill-cli
 cp config.example.json config.json
 ```
 
@@ -196,9 +201,10 @@ Requirements:
 2. Clone this repository into `comfyui-skill`.
 3. Keep SKILL.md at the project root.
 4. Install Python dependencies from requirements.txt.
-5. Run `cp config.example.json config.json`.
-6. Set the default ComfyUI server URL to http://127.0.0.1:8188 unless I specify another one.
-7. Make sure Codex can discover and call this skill after installation.
+5. Install the CLI tool: `pip install comfyui-skill-cli`.
+6. Run `cp config.example.json config.json`.
+7. Set the default ComfyUI server URL to http://127.0.0.1:8188 unless I specify another one.
+8. Make sure Codex can discover and call this skill after installation.
 ```
 
 </details>
@@ -306,35 +312,43 @@ If you want a full example, refer to:
 - `data/local/Default/schema.json`
 - These two files are generic examples. Before running them, replace node `4`'s `ckpt_name` in `workflow.json` with a checkpoint name that exists on your ComfyUI server.
 
-#### 4) Verify the Configuration
+#### 4) Install the CLI
+
+```bash
+pip install comfyui-skill-cli
+```
+
+Or with [pipx](https://pipx.pypa.io/) (recommended, avoids polluting global Python):
+
+```bash
+pipx install comfyui-skill-cli
+```
+
+#### 5) Verify the Configuration
 
 List the available workflows:
 
 ```bash
-python scripts/registry.py list
+comfyui-skill --json list
 ```
 
 Run a test generation:
 
 ```bash
-python scripts/comfyui_client.py \
-  --workflow <server_id>/<workflow_id> \
-  --args '{"prompt":"test"}'
+comfyui-skill --json run <server_id>/<workflow_id> --args '{"prompt":"test"}'
 ```
 
 Example:
 
 ```bash
-python scripts/comfyui_client.py \
-  --workflow local/Default \
-  --args '{"prompt":"A premium product photo"}'
+comfyui-skill --json run local/Default --args '{"prompt":"A premium product photo"}'
 ```
 
 On success, the output looks like this:
 
 ```json
 {
-  "status": "success",
+  "status": "completed",
   "prompt_id": "...",
   "images": ["./outputs/<prompt_id>_...png"]
 }
