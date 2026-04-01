@@ -2,7 +2,7 @@
 name: comfyui-skill-openclaw
 description: |
   Generate images utilizing ComfyUI's powerful node-based workflow capabilities. Supports dynamically loading multiple pre-configured generation workflows from different instances and their corresponding parameter mappings, importing saved workflows in bulk from ComfyUI or local JSON files, converting natural language into parameters, driving local or remote ComfyUI services, tracking execution history with parameters and results, and ultimately returning the images to the target client.
-  
+
   **Use this Skill when:**
   (1) The user requests to "generate an image", "draw a picture", or "execute a ComfyUI workflow".
   (2) The user has specific stylistic, character, or scene requirements for image generation.
@@ -13,7 +13,22 @@ description: |
 
 ## Core Execution Specification
 
-As an OpenClaw Agent equipped with the ComfyUI skill, your objective is to translate the user's conversational requests into strict, structured parameters and hand them over to the underlying Python scripts to execute workflows across multi-server environments.
+As an Agent equipped with the ComfyUI skill, your objective is to translate the user's conversational requests into strict, structured parameters and execute workflows across multi-server environments.
+
+> **Prerequisites**: Install the CLI tool once: `pip install comfyui-skill-cli`. All commands must be run from this project's root directory.
+
+### Quick Reference
+
+| Command | Purpose |
+|---------|---------|
+| `comfyui-skill --json server status` | Check if ComfyUI server is online |
+| `comfyui-skill --json list` | List all available workflows and parameters |
+| `comfyui-skill --json info <id>` | Show workflow details and parameter schema |
+| `comfyui-skill --json submit <id> --args '{...}'` | Submit a workflow (non-blocking) |
+| `comfyui-skill --json status <prompt_id>` | Check execution status |
+| `comfyui-skill --json run <id> --args '{...}'` | Execute a workflow (blocking) |
+
+Skill IDs use the format `<server_id>/<workflow_id>` (e.g., `local/txt2img`).
 
 ### UI Management Shortcut
 
@@ -28,34 +43,12 @@ This command will:
 - start it in the background if it is not running
 - try to open the browser to the local dashboard automatically
 
-### Native ComfyUI API Surface
-
-This skill is primarily a workflow execution client for a local or remote ComfyUI server.
-
-The core native ComfyUI routes relevant to this skill are:
-
-- `POST /prompt` to submit a workflow run
-- `GET /history/{prompt_id}` to poll for completion
-- `GET /view` to download generated images
-
-Other native ComfyUI routes such as `/ws`, `/queue`, `/interrupt`, `/upload/image`, `/object_info`, and `/system_stats` exist upstream but are not required for the basic execution path implemented here.
-
-For the route-level reference and the distinction between native ComfyUI routes and this repository's own manager API, see [`docs/comfyui-native-routes.md`](./docs/comfyui-native-routes.md).
-
-The local manager API also exposes higher-level workflow execution and history routes:
-
-- `POST /api/servers/{server_id}/workflow/{workflow_id}/run`
-- `GET /api/servers/{server_id}/workflow/{workflow_id}/history`
-- `GET /api/servers/{server_id}/workflow/{workflow_id}/history/{run_id}`
-
 ### Server Health Check
 
-Before running a workflow, check whether the target ComfyUI server is online.
+Before running a workflow, check whether the target ComfyUI server is online:
 
-You can query the manager API endpoint:
-
-```http
-GET /api/servers/{server_id}/status
+```bash
+comfyui-skill --json server status
 ```
 
 This returns JSON with `"status": "online"` or `"status": "offline"`.
@@ -81,11 +74,10 @@ If the user provides you with one new ComfyUI workflow JSON (API format) and ask
    {
      "workflow_id": "<new_workflow_id>",
      "server_id": "<server_id>",
-     "description": "Auto-configured by OpenClaw",
+     "description": "Auto-configured by Agent",
      "enabled": true,
      "parameters": {
        "prompt": { "node_id": "3", "field": "text", "required": true, "type": "string", "description": "Positive prompt" }
-       // Add other sensible parameters that the user might want to tweak
      }
    }
    ```
@@ -95,11 +87,11 @@ If the user provides you with one new ComfyUI workflow JSON (API format) and ask
 
 Before attempting to generate any image, you must **first query the registry** to understand which workflows are currently supported and enabled:
 ```bash
-python ./scripts/registry.py list --agent
+comfyui-skill --json list
 ```
 
 **Return Format Parsing**:
-You will receive a JSON containing all available workflows. Notice they are uniquely identified by the combination of `server_id` and `workflow_id` (or path format `<server_id>/<workflow_id>`):
+You will receive a JSON array containing all available workflows. Each is uniquely identified by the combination of `server_id` and `workflow_id` (or path format `<server_id>/<workflow_id>`):
 - For parameters with `required: true`, if the user hasn't provided them, you must **ask the user to provide them**.
 - For parameters with `required: false`, you can infer and generate them yourself based on the user's description (e.g., translating and optimizing the user's scene), or simply use empty values/random numbers (e.g., `seed` = random number).
 - Never expose underlying node information to the user (do not mention Node IDs); only ask about business parameter names (e.g., prompt, style).
@@ -111,30 +103,28 @@ Once you have identified the workflow to use and collected/generated all necessa
 For example, if the schema exposes `prompt` and `seed`, you need to construct:
 `{"prompt": "A beautiful landscape, high quality, masterpiece", "seed": 40128491}`
 
-*If critical parameters are missing, politely ask the user using `notify_user`. For example: "To generate the image you need, would you like a specific person or animal? Do you have an expected visual style?"*
+*If critical parameters are missing, politely ask the user. For example: "To generate the image you need, would you like a specific person or animal? Do you have an expected visual style?"*
 
 ### Step 2.5: Pre-flight Dependency Check (Automatic)
 
 Before executing a workflow, **always** run a dependency check to verify that all required custom nodes and models are available on the ComfyUI server:
 
 ```bash
-python ./scripts/comfyui_client.py check-deps --workflow <server_id>/<workflow_id>
+comfyui-skill --json deps check <server_id>/<workflow_id>
 ```
 
 **Return format:**
 ```json
 {
-  "status": "success",
-  "report": {
-    "is_ready": true/false,
-    "missing_nodes": [
-      {"class_type": "SAMDetectorCombined", "package_name": "ComfyUI Impact Pack", "source_repo": "https://github.com/...", "can_auto_install": true}
-    ],
-    "missing_models": [
-      {"filename": "model.safetensors", "folder": "checkpoints", "loader_node": "CheckpointLoaderSimple"}
-    ],
-    "summary": "缺少 1 个自定义节点包；缺少 1 个模型文件"
-  }
+  "is_ready": false,
+  "missing_nodes": [
+    {"class_type": "SAMDetectorCombined", "can_auto_install": false}
+  ],
+  "missing_models": [
+    {"filename": "model.safetensors", "folder": "checkpoints", "loader_node": "CheckpointLoaderSimple", "node_id": "4"}
+  ],
+  "total_nodes_required": 12,
+  "total_nodes_installed": 11
 }
 ```
 
@@ -148,16 +138,14 @@ python ./scripts/comfyui_client.py check-deps --workflow <server_id>/<workflow_i
    ```bash
    python ./scripts/comfyui_client.py install-deps --workflow <server_id>/<workflow_id> --repos '["https://github.com/repo1", "https://github.com/repo2"]'
    ```
-   This returns installation results for each package. Report the results to the user.
+   Use the `source_repo` URLs from the dependency check report as `--repos` values. This returns installation results for each package. Report the results to the user.
    - If `needs_restart` is `true`, inform the user that ComfyUI needs to restart for changes to take effect.
    - After restart, re-run `check-deps` to confirm everything is resolved, then proceed to Step 3.
 4. For missing models: inform the user that models must be downloaded manually, and tell them which folder to place the files in (e.g., "Please download `model.safetensors` and place it in the `checkpoints` folder").
 
 ### Step 3: Trigger the Image Generation Task
 
-Once the complete parameters are collected and the dependency check passes, execute the workflow client in a command-line environment (ensure your current working directory is the project root, or navigate to it first).
-
-Pass the full identifier as `<server_id>/<workflow_id>`.
+Once the complete parameters are collected and the dependency check passes, execute the workflow.
 
 > **Note**: Outer curly braces must be wrapped in single quotes to prevent bash from incorrectly parsing JSON double quotes.
 
@@ -170,21 +158,25 @@ There are two execution modes. Choose based on your environment:
 
 **Step 3a — Submit the job:**
 ```bash
-python ./scripts/comfyui_client.py submit --workflow <server_id>/<workflow_id> --args '{"key1": "value1", "key2": 123}'
+comfyui-skill --json submit <server_id>/<workflow_id> --args '{"key1": "value1", "key2": 123}'
 ```
-Returns immediately: `{"status": "submitted", "run_id": "...", "prompt_id": "..."}`.
+Returns immediately:
+```json
+{"status": "submitted", "prompt_id": "91f87917-3b0b-4d0f-8768-356f8d18c2e6"}
+```
 
 After receiving the response, tell the user that image generation has started.
 
 **Step 3b — Poll for progress:**
 ```bash
-python ./scripts/comfyui_client.py status --workflow <server_id>/<workflow_id> --run-id <run_id>
+comfyui-skill --json status <prompt_id>
 ```
 Returns immediately with the current state:
-- `{"status": "queued", "queue_position": 2, "queue_total": 5}` — waiting in line
-- `{"status": "running", "elapsed_ms": 12000}` — ComfyUI is actively generating
-- `{"status": "success", "images": ["/path/to/image.png"]}` — done, images downloaded
-- `{"status": "error", "error": "..."}` — generation failed
+- `{"status": "queued", "prompt_id": "...", "position": 2}` — waiting in line
+- `{"status": "running", "prompt_id": "..."}` — ComfyUI is actively generating
+- `{"status": "success", "prompt_id": "...", "outputs": [{"filename": "ComfyUI_00001_.png", "subfolder": "", "type": "output"}]}` — done
+- `{"status": "not_found", "prompt_id": "..."}` — job not found in queue or history
+- `{"status": "error", "prompt_id": "...", "error": "..."}` — generation failed
 
 **Polling pattern — this is critical for real-time feedback:**
 
@@ -192,7 +184,7 @@ Each `status` call must be a **separate tool invocation** (i.e., a separate bash
 
 1. Run `status` as a standalone bash command.
 2. Read the returned JSON.
-3. If `"queued"` or `"running"`: **send a text message to the user** with the current progress (e.g., "Queued at position 2…", "Generating, 12 seconds elapsed…"), then run `status` again as another standalone bash command.
+3. If `"queued"` or `"running"`: **send a text message to the user** with the current progress (e.g., "Queued at position 2…", "Generating…"), then run `status` again as another standalone bash command.
 4. If `"success"`: proceed to Step 4.
 5. If `"error"`: report the error.
 
@@ -201,22 +193,25 @@ This ensures each progress update is delivered to the user immediately, rather t
 #### Non-interactive mode: one-shot blocking
 
 ```bash
-python ./scripts/comfyui_client.py --workflow <server_id>/<workflow_id> --args '{"key1": "value1", "key2": 123}'
+comfyui-skill --json run <server_id>/<workflow_id> --args '{"key1": "value1", "key2": 123}'
 ```
-Blocks until ComfyUI finishes, then returns the full result.
+Blocks until ComfyUI finishes, then returns the full result:
+```json
+{"status": "success", "prompt_id": "...", "outputs": [{"filename": "ComfyUI_00001_.png", "subfolder": "", "type": "output"}]}
+```
 
 **Result format (both modes)**:
-- On success: JSON with `run_id`, `prompt_id`, and an `images` list of absolute local file paths.
-- On error: JSON with `run_id` (if created) and `error` message.
+- On success: JSON with `prompt_id` and an `outputs` array containing ComfyUI output file references (filename, subfolder, type).
+- On error: JSON with `error` code and message.
 
 The manager stores execution history per workflow, including raw args, resolved args, prompt ID, result files, status, timing, and error summary. History records live under `data/<server_id>/<workflow_id>/history/`.
 
 ### Step 4: Send the Image to the User
 
-Once you obtain the absolute local path to the generated image, use your native capabilities to present the file to the user (e.g., in an OpenClaw environment, returning the path allows the client to intercept it and convert it into rich text or an image preview).
+Once you obtain the output filenames from the result, use your native capabilities to present the files to the user (e.g., in an OpenClaw environment, returning the path allows the client to intercept it and convert it into rich text or an image preview).
 
 ## Common Troubleshooting & Notices
-1. **ComfyUI Offline**: If the script returns "Error connecting to ComfyUI", run a server status check and ask the user to start the ComfyUI service for that server URL before retrying.
-2. **Schema Not Found**: If you directly called a workflow the user mentioned verbally, but the script reports a missing Schema, perform Step 1 `registry.py` and tell the user they need to first go to the Web UI panel to upload and configure the mapping for that workflow on the desired server.
+1. **ComfyUI Offline**: If the CLI returns a connection error, run `comfyui-skill --json server status` and ask the user to start the ComfyUI service before retrying.
+2. **Schema Not Found**: If you directly called a workflow the user mentioned verbally, but the CLI reports it not found, run `comfyui-skill --json list` and tell the user they need to first go to the Web UI panel to upload and configure the mapping for that workflow on the desired server.
 3. **Parameter Format Error**: Ensure that the JSON passed via `--args` is a valid JSON string wrapped in single quotes.
 4. **Cloud Node Unauthorized**: If a workflow fails with "Unauthorized: Please login first to use this node", the workflow uses ComfyUI cloud API nodes (e.g., Kling, Sora, Nano Banana). The user needs to configure a ComfyUI API Key in the server settings. Guide them to: (1) Go to https://platform.comfy.org to generate an API Key, (2) Open the Web UI panel → Server Settings → fill in the "ComfyUI API Key" field.
