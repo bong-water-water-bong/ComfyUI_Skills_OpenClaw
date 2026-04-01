@@ -4,22 +4,29 @@ title: ComfyUI Skills for OpenClaw
 
 # ComfyUI Skills for OpenClaw
 
-A ComfyUI workflow skill for OpenClaw and other AI agents that support skills.
-
-This project turns ComfyUI workflows into callable skills, so skill-capable agents can trigger image generation through local or remote ComfyUI servers.
+Turn your ComfyUI workflows into callable skills for AI agents. Any agent that can run shell commands — Claude Code, Codex, OpenClaw — can discover, execute, and manage ComfyUI workflows through a single CLI.
 
 ## Core Capabilities
 
-- Run ComfyUI workflows as callable skills
-- Support OpenClaw and other skill-capable AI agents
-- Manage workflow mappings and multi-server execution
-- Return generated images from local or remote ComfyUI nodes
+- **Agent-native CLI** — structured JSON output, pipe-friendly, designed for AI agents
+- **Multi-server routing** — manage multiple ComfyUI instances under one namespace
+- **Schema-based parameters** — expose a clean contract instead of raw graph nodes
+- **Full lifecycle** — discover, import, execute, manage workflows and dependencies in one tool
+- **Web UI included** — optional local dashboard for visual workflow management
+
+## Quick Start
+
+```bash
+pip install comfyui-skill-cli
+comfyui-skill server status
+comfyui-skill list
+comfyui-skill run local/txt2img --args '{"prompt": "a white cat"}'
+```
 
 ## Project Links
 
 - [GitHub Repository](https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw)
+- [CLI Tool (PyPI)](https://pypi.org/project/comfyui-skill-cli/)
 - [English README](https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw/blob/main/README.md)
 - [Chinese README](https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw/blob/main/README.zh.md)
-- [ComfyUI Native Local Routes](https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw/blob/main/docs/comfyui-native-routes.md)
-- [ComfyUI 原生本地路由（中文）](https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw/blob/main/docs/comfyui-native-routes.zh.md)
-- [Project Discovery Checklist](https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw/blob/main/docs/PROJECT_DISCOVERY_CHECKLIST.md)
+- [ComfyUI Native Routes Reference]({{ '/comfyui-native-routes/' | relative_url }})

@@ -47,6 +47,11 @@ eggs/
 # Claude Code
 .claude/
 
+# Internal docs (not for public repo)
+docs/cli-design.md
+docs/PROJECT_DISCOVERY_CHECKLIST.md
+docs/feature-checklist.md
+
 # Standalone frontend source repository checked out locally
 frontend/
 
