@@ -27,6 +27,8 @@ As an Agent equipped with the ComfyUI skill, your objective is to translate the 
 | `comfyui-skill --json submit <id> --args '{...}'` | Submit a workflow (non-blocking) |
 | `comfyui-skill --json status <prompt_id>` | Check execution status |
 | `comfyui-skill --json run <id> --args '{...}'` | Execute a workflow (blocking) |
+| `comfyui-skill --json deps check <id>` | Check missing dependencies |
+| `comfyui-skill --json deps install <id> --repos '[...]'` | Install missing custom nodes |
 
 Skill IDs use the format `<server_id>/<workflow_id>` (e.g., `local/txt2img`).
 
@@ -136,7 +138,7 @@ comfyui-skill --json deps check <server_id>/<workflow_id>
    - Ask the user: "Do you want me to install the missing custom nodes?"
 3. If the user agrees to install, run:
    ```bash
-   python ./scripts/comfyui_client.py install-deps --workflow <server_id>/<workflow_id> --repos '["https://github.com/repo1", "https://github.com/repo2"]'
+   comfyui-skill --json deps install <server_id>/<workflow_id> --repos '["https://github.com/repo1", "https://github.com/repo2"]'
    ```
    Use the `source_repo` URLs from the dependency check report as `--repos` values. This returns installation results for each package. Report the results to the user.
    - If `needs_restart` is `true`, inform the user that ComfyUI needs to restart for changes to take effect.
