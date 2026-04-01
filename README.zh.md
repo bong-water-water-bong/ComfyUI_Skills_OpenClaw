@@ -89,6 +89,7 @@ cd comfyui-skill-openclaw
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -r requirements.txt
+pip install comfyui-skill-cli
 cp config.example.json config.json
 ```
 
@@ -111,9 +112,10 @@ cp config.example.json config.json
 2. 将这个仓库克隆为 `comfyui-skill-openclaw` 目录。
 3. 保留根目录下的 SKILL.md。
 4. 安装 requirements.txt 里的 Python 依赖。
-5. 执行 `cp config.example.json config.json`。
-6. 如果我没有额外指定，就默认把 ComfyUI 地址设置为 http://127.0.0.1:8188。
-7. 安装完成后，确保 OpenClaw 可以发现并调用这个 skill。
+5. 安装 CLI 工具：`pip install comfyui-skill-cli`。
+6. 执行 `cp config.example.json config.json`。
+7. 如果我没有额外指定，就默认把 ComfyUI 地址设置为 http://127.0.0.1:8188。
+8. 安装完成后，确保 OpenClaw 可以发现并调用这个 skill。
 ```
 
 </details>
@@ -130,6 +132,7 @@ cd comfyui-skill
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -r requirements.txt
+pip install comfyui-skill-cli
 cp config.example.json config.json
 ```
 
@@ -152,9 +155,10 @@ cp config.example.json config.json
 2. 将这个仓库克隆为 `comfyui-skill` 目录。
 3. 保留根目录下的 SKILL.md。
 4. 安装 requirements.txt 里的 Python 依赖。
-5. 执行 `cp config.example.json config.json`。
-6. 如果我没有额外指定，就默认把 ComfyUI 地址设置为 http://127.0.0.1:8188。
-7. 安装完成后，确保 Claude Code 可以发现并调用这个 skill。
+5. 安装 CLI 工具：`pip install comfyui-skill-cli`。
+6. 执行 `cp config.example.json config.json`。
+7. 如果我没有额外指定，就默认把 ComfyUI 地址设置为 http://127.0.0.1:8188。
+8. 安装完成后，确保 Claude Code 可以发现并调用这个 skill。
 ```
 
 </details>
@@ -171,6 +175,7 @@ cd comfyui-skill
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -r requirements.txt
+pip install comfyui-skill-cli
 cp config.example.json config.json
 ```
 
@@ -193,9 +198,10 @@ cp config.example.json config.json
 2. 将这个仓库克隆为 `comfyui-skill` 目录。
 3. 保留根目录下的 SKILL.md。
 4. 安装 requirements.txt 里的 Python 依赖。
-5. 执行 `cp config.example.json config.json`。
-6. 如果我没有额外指定，就默认把 ComfyUI 地址设置为 http://127.0.0.1:8188。
-7. 安装完成后，确保 Codex 可以发现并调用这个 skill。
+5. 安装 CLI 工具：`pip install comfyui-skill-cli`。
+6. 执行 `cp config.example.json config.json`。
+7. 如果我没有额外指定，就默认把 ComfyUI 地址设置为 http://127.0.0.1:8188。
+8. 安装完成后，确保 Codex 可以发现并调用这个 skill。
 ```
 
 </details>
@@ -303,35 +309,43 @@ data/local/Default/
 - `data/local/Default/schema.json`
 - 这两个文件是通用示例；运行前请先把 `workflow.json` 里节点 `4` 的 `ckpt_name` 改成你本地 ComfyUI 可用的 checkpoint 名称
 
-#### 4）验证配置是否成功
+#### 4）安装 CLI 工具
+
+```bash
+pip install comfyui-skill-cli
+```
+
+或者用 [pipx](https://pipx.pypa.io/)（推荐，不污染全局 Python 环境）：
+
+```bash
+pipx install comfyui-skill-cli
+```
+
+#### 5）验证配置是否成功
 
 查看工作流列表：
 
 ```bash
-python scripts/registry.py list
+comfyui-skill --json list
 ```
 
 执行一次测试生图：
 
 ```bash
-python scripts/comfyui_client.py \
-  --workflow <server_id>/<workflow_id> \
-  --args '{"prompt":"test"}'
+comfyui-skill --json run <server_id>/<workflow_id> --args '{"prompt":"test"}'
 ```
 
 例如：
 
 ```bash
-python scripts/comfyui_client.py \
-  --workflow local/Default \
-  --args '{"prompt":"一张高质感产品摄影图"}'
+comfyui-skill --json run local/Default --args '{"prompt":"一张高质感产品摄影图"}'
 ```
 
 成功后会返回类似：
 
 ```json
 {
-  "status": "success",
+  "status": "completed",
   "prompt_id": "...",
   "images": ["./outputs/<prompt_id>_...png"]
 }
