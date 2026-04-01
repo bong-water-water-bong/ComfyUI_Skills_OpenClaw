@@ -1,6 +1,6 @@
 ---
 title: FAQ
-description: Frequently asked questions about ComfyUI Skills for OpenClaw, including workflow requirements, multi-server support, and the local web UI.
+description: Frequently asked questions about ComfyUI Skills, including CLI installation, workflow import, multi-server support, dependency management, and the optional web UI.
 permalink: /faq/
 ---
 
@@ -8,10 +8,10 @@ permalink: /faq/
   <div class="hero-inner">
     <div class="hero-copy">
       <p class="eyebrow">FAQ</p>
-      <h1>Frequently asked questions about ComfyUI Skills for OpenClaw</h1>
+      <h1>Frequently asked questions about ComfyUI Skills</h1>
       <p class="lede">
-        These answers are written for users comparing ComfyUI integrations, OpenClaw skills,
-        and agent-friendly workflow tooling.
+        These answers cover CLI usage, workflow management, multi-server setup,
+        and agent integration.
       </p>
       <div class="quick-links">
         <a class="quick-link" href="{{ '/getting-started/' | relative_url }}">Getting Started</a>

@@ -68,9 +68,9 @@ permalink: /use-cases/
     <p class="eyebrow-label">Use Case 4</p>
     <h2>Let an agent manage configuration for you</h2>
     <p>
-      Because the repository is structured around predictable files and CLI entry points,
-      OpenClaw or another coding agent can help create servers, write workflow mappings,
-      and verify the setup. This is especially helpful when moving the same skill pack across machines.
+      Because the project is structured around predictable files and a single CLI tool (<code>comfyui-skill</code>),
+      any coding agent can add servers, import workflows, check dependencies, and verify the setup.
+      This is especially helpful when moving the same skill pack across machines using <code>config export</code> and <code>config import</code>.
     </p>
     <div class="card-cta">
       <a class="button primary" href="{{ '/getting-started/' | relative_url }}">Start Setup</a>

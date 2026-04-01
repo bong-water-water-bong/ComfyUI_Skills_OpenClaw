@@ -1,6 +1,6 @@
 ---
 title: Architecture
-description: Technical overview of how ComfyUI Skills for OpenClaw maps agent input into ComfyUI workflow execution, including the registry, client, web UI, and workflow storage model.
+description: Technical overview of how ComfyUI Skills maps agent input into ComfyUI workflow execution through the CLI, schema layer, and multi-server routing.
 permalink: /architecture/
 ---
 
@@ -19,10 +19,22 @@ permalink: /architecture/
     <h2>Core components</h2>
     <ul class="definition-list">
       <li><strong>SKILL.md</strong>: the agent-facing contract that explains how the skill is discovered and called.</li>
-      <li><strong>scripts/registry.py</strong>: lists enabled workflows and the parameters exposed to the agent.</li>
-      <li><strong>scripts/comfyui_client.py</strong>: injects args into a workflow, submits the prompt, waits, and downloads images.</li>
-      <li><strong>scripts/server_manager.py</strong>: manages multi-server configuration from CLI.</li>
-      <li><strong>ui/</strong>: FastAPI plus the local dashboard for servers, workflows, and mapping edits.</li>
+      <li><strong>comfyui-skill CLI</strong>: the primary interface for discovering, executing, and managing workflows. Install via <code>pip install comfyui-skill-cli</code>.</li>
+      <li><strong>config.json</strong>: multi-server configuration — server URLs, auth, default server.</li>
+      <li><strong>data/</strong>: workflow storage organized by <code>&lt;server_id&gt;/&lt;workflow_id&gt;/</code>.</li>
+      <li><strong>ui/</strong>: optional FastAPI-based local dashboard for visual workflow management.</li>
+    </ul>
+  </section>
+
+  <section class="section-card">
+    <p class="eyebrow-label">CLI Commands</p>
+    <h2>What the CLI does</h2>
+    <ul class="definition-list">
+      <li><strong>comfyui-skill list</strong>: lists enabled workflows and their parameters.</li>
+      <li><strong>comfyui-skill run / submit</strong>: injects args into a workflow, submits the prompt, waits or polls, and downloads images.</li>
+      <li><strong>comfyui-skill server</strong>: manages multi-server configuration (add, remove, enable, disable).</li>
+      <li><strong>comfyui-skill workflow import</strong>: imports workflows from local JSON or ComfyUI server, auto-detects format, and generates schema.</li>
+      <li><strong>comfyui-skill deps</strong>: checks and installs missing custom nodes and models.</li>
     </ul>
   </section>
 
@@ -30,11 +42,11 @@ permalink: /architecture/
     <p class="eyebrow-label">Execution Flow</p>
     <h2>From natural language to image file</h2>
     <ol class="step-list">
-      <li>The agent asks the registry which workflows are enabled.</li>
-      <li>The repository resolves user intent into structured args.</li>
-      <li>The client maps those args into ComfyUI node fields using <code>schema.json</code>.</li>
-      <li>The client calls native ComfyUI endpoints such as <code>/prompt</code>, <code>/history/{prompt_id}</code>, and <code>/view</code>.</li>
-      <li>The output images are downloaded to local storage and returned to the caller.</li>
+      <li>The agent calls <code>comfyui-skill list</code> to discover enabled workflows.</li>
+      <li>The agent resolves user intent into structured args based on the schema.</li>
+      <li>The CLI maps those args into ComfyUI node fields using <code>schema.json</code>.</li>
+      <li>The CLI calls native ComfyUI endpoints: <code>/prompt</code>, <code>/history/{prompt_id}</code>, and <code>/view</code>.</li>
+      <li>Output images are downloaded to local storage and returned to the caller.</li>
     </ol>
   </section>
 
@@ -45,8 +57,9 @@ permalink: /architecture/
       <pre><code>data/
   &lt;server_id&gt;/
     &lt;workflow_id&gt;/
-      workflow.json
-      schema.json</code></pre>
+      workflow.json   # ComfyUI API-format workflow
+      schema.json     # Parameter mapping for agents
+      history/        # Execution history records</code></pre>
     </div>
     <p>
       This structure makes workflows portable and easy to inspect. It also gives the repository
