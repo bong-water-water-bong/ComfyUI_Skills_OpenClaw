@@ -14,7 +14,7 @@ python_is_supported() {
 }
 
 python_has_ui_deps() {
-  "$1" -c 'import fastapi, uvicorn, pydantic, requests' >/dev/null 2>&1
+  "$1" -c 'import fastapi, uvicorn, pydantic, requests, multipart' >/dev/null 2>&1
 }
 
 discover_python_candidates() {
