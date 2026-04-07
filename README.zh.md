@@ -20,6 +20,12 @@
     <a href="https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw/stargazers">
       <img src="https://img.shields.io/github/stars/HuangYuChuh/ComfyUI_Skills_OpenClaw?style=flat" alt="GitHub stars">
     </a>
+    <a href="https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw/network/members">
+      <img src="https://img.shields.io/github/forks/HuangYuChuh/ComfyUI_Skills_OpenClaw?style=flat" alt="GitHub forks">
+    </a>
+    <a href="https://www.python.org/">
+      <img src="https://img.shields.io/static/v1?label=Python&message=3.10%2B&color=3776AB&style=flat&logo=python&logoColor=white" alt="Python 3.10+">
+    </a>
   </p>
 
   <p>
