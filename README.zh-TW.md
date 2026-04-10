@@ -474,6 +474,10 @@ comfyui-skill deps check <workflow_id>
 
 完整版本記錄見 [CHANGELOG.zh.md](./CHANGELOG.zh.md)。
 
+## 貢獻
+
+歡迎貢獻！提交 PR 前請閱讀 [CONTRIBUTING.md](./CONTRIBUTING.md)。
+
 ## 相關資源
 
 - [English README](./README.md)

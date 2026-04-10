@@ -474,6 +474,10 @@ Recent highlights:
 
 See [CHANGELOG.md](./CHANGELOG.md) for the full release history.
 
+## Contributing
+
+Contributions are welcome! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before submitting a PR.
+
 ## Resources
 
 - [English README](./README.md)

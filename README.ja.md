@@ -475,6 +475,10 @@ comfyui-skill deps check <workflow_id>
 
 完全な変更履歴は [CHANGELOG.md](./CHANGELOG.md) を参照してください。
 
+## コントリビューション
+
+コントリビューション歓迎です！PR を送る前に [CONTRIBUTING.md](./CONTRIBUTING.md) をお読みください。
+
 ## 関連リソース
 
 - [English README](./README.md)
