@@ -22,6 +22,7 @@
     <a href="https://www.bilibili.com/video/BV1a6cUzVEE6/">🎬 演示视频</a> ·
     <a href="https://huangyuchuh.github.io/ComfyUI_Skills_OpenClaw/">📘 文档站</a> ·
     <a href="#quick-start">🧭 快速开始</a> ·
+    <a href="#cli">⌨️ CLI</a> ·
     <a href="#web-ui">🖥️ Web UI</a> ·
     <a href="#multi-server-management">🛰️ 多服务器</a>
   </p>
@@ -30,7 +31,9 @@
     <a href="./README.md">English</a> ·
     <strong>简体中文</strong> ·
     <a href="./README.zh-TW.md">繁體中文</a> ·
-    <a href="./README.ja.md">日本語</a>
+    <a href="./README.ja.md">日本語</a> ·
+    <a href="./README.ko.md">한국어</a> ·
+    <a href="./README.es.md">Español</a>
   </p>
 </div>
 
@@ -303,6 +306,7 @@ ComfyUI workflow.json
 
 这种结构让 Agent 面对的是一个稳定的调用契约，而不是直接去理解原始的 ComfyUI graph 节点。
 
+<a id="cli"></a>
 ## 常用命令
 
 下面这些命令覆盖了最常见的使用场景。
@@ -481,8 +485,10 @@ comfyui-skill deps check <workflow_id>
 ## 相关资源
 
 - [English README](./README.md)
-- [简体中文 README](./README.zh.md)
+- [简体中文 README](./README.zh-CN.md)
 - [繁體中文 README](./README.zh-TW.md)
 - [日本語 README](./README.ja.md)
+- [한국어 README](./README.ko.md)
+- [Español README](./README.es.md)
 - [ComfyUI Skill CLI](https://github.com/HuangYuChuh/ComfyUI_Skill_CLI)
 - [Frontend Repository](https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw-frontend)

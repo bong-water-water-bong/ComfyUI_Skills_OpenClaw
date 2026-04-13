@@ -22,15 +22,18 @@
     <a href="https://www.bilibili.com/video/BV1a6cUzVEE6/">🎬 Demo Video</a> ·
     <a href="https://huangyuchuh.github.io/ComfyUI_Skills_OpenClaw/">📘 Docs</a> ·
     <a href="#quick-start">🧭 Quick Start</a> ·
+    <a href="#cli">⌨️ CLI</a> ·
     <a href="#web-ui">🖥️ Web UI</a> ·
     <a href="#multi-server-management">🛰️ Multi-Server</a>
   </p>
 
   <p>
     <strong>English</strong> ·
-    <a href="./README.zh.md">简体中文</a> ·
+    <a href="./README.zh-CN.md">简体中文</a> ·
     <a href="./README.zh-TW.md">繁體中文</a> ·
-    <a href="./README.ja.md">日本語</a>
+    <a href="./README.ja.md">日本語</a> ·
+    <a href="./README.ko.md">한국어</a> ·
+    <a href="./README.es.md">Español</a>
   </p>
 </div>
 
@@ -254,6 +257,7 @@ data/local/my-workflow/
 
 </details>
 
+<a id="cli"></a>
 ## Common Commands
 
 Beyond the commands shown in [Quick Start](#quick-start), here are additional operations you may need:
@@ -409,8 +413,10 @@ Contributions are welcome! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) befo
 ## Resources
 
 - [English README](./README.md)
-- [简体中文 README](./README.zh.md)
+- [简体中文 README](./README.zh-CN.md)
 - [繁體中文 README](./README.zh-TW.md)
 - [日本語 README](./README.ja.md)
+- [한국어 README](./README.ko.md)
+- [Español README](./README.es.md)
 - [ComfyUI Skill CLI](https://github.com/HuangYuChuh/ComfyUI_Skill_CLI)
 - [Frontend Repository](https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw-frontend)

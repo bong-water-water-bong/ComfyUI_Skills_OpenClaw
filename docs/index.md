@@ -28,5 +28,5 @@ comfyui-skill run local/txt2img --args '{"prompt": "a white cat"}'
 - [GitHub Repository](https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw)
 - [CLI Tool (PyPI)](https://pypi.org/project/comfyui-skill-cli/)
 - [English README](https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw/blob/main/README.md)
-- [Chinese README](https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw/blob/main/README.zh.md)
+- [Chinese README](https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw/blob/main/README.zh-CN.md)
 - [ComfyUI Native Routes Reference]({{ '/comfyui-native-routes/' | relative_url }})
