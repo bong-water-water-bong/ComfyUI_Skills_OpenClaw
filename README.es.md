@@ -3,7 +3,7 @@
 
   <h1>ComfyUI Skills for OpenClaw</h1>
 
-  <p><strong>Skills de flujo de trabajo ComfyUI amigables con agentes para OpenClaw, Codex, Claude Code y otros agentes.</strong></p>
+  <p><strong>Skills de flujo de trabajo ComfyUI amigables con agentes para OpenClaw, Hermes Agent, Codex, Claude Code y otros agentes.</strong></p>
 
   <p>
     Este proyecto convierte los flujos de trabajo de ComfyUI en skills invocables, con una CLI amigable para agentes como interfaz principal
@@ -16,6 +16,8 @@
     <a href="https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw/stargazers"><img src="https://img.shields.io/github/stars/HuangYuChuh/ComfyUI_Skills_OpenClaw?style=flat&color=EAB308&logo=github" alt="GitHub stars"></a>
     <a href="https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw/network/members"><img src="https://img.shields.io/github/forks/HuangYuChuh/ComfyUI_Skills_OpenClaw?style=flat&color=F97316&logo=github" alt="GitHub forks"></a>
     <a href="https://www.python.org/"><img src="https://img.shields.io/static/v1?label=Python&message=3.10%2B&color=3B82F6&style=flat&logo=python&logoColor=white" alt="Python 3.10+"></a>
+    <a href="https://github.com/NousResearch/hermes-agent"><img src="https://img.shields.io/static/v1?label=Hermes%20Agent&message=compatible&color=8B5CF6&style=flat&logo=data%3Aimage/svg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNMTIgMmExMCAxMCAwIDEgMCAwIDIwIDEwIDEwIDAgMCAwIDAtMjBaIi8%2BPHBhdGggZD0iTTggMTRzMS41IDIgNCAyczQtMiA0LTIiLz48L3N2Zz4%3D&logoColor=white" alt="Hermes Agent Compatible"></a>
+    <a href="https://agentskills.io"><img src="https://img.shields.io/static/v1?label=agentskills.io&message=standard&color=06B6D4&style=flat" alt="agentskills.io standard"></a>
   </p>
 
   <p>
@@ -45,13 +47,13 @@
 
 ComfyUI Skills for OpenClaw es un puente amigable para agentes que convierte flujos de trabajo de ComfyUI en skills invocables por agentes.
 
-En lugar de hacer que un agente manipule grafos crudos de ComfyUI, este proyecto proporciona a cada flujo de trabajo una interfaz limpia y controlada a través de una CLI y un mapeo de parámetros basado en esquemas. Funciona con OpenClaw, Codex, Claude Code y otros agentes que pueden ejecutar comandos de shell.
+En lugar de hacer que un agente manipule grafos crudos de ComfyUI, este proyecto proporciona a cada flujo de trabajo una interfaz limpia y controlada a través de una CLI y un mapeo de parámetros basado en esquemas. Funciona con OpenClaw, Hermes Agent, Codex, Claude Code y otros agentes que pueden ejecutar comandos de shell. Compatible con el estándar abierto [agentskills.io](https://agentskills.io).
 
 Úsalo cuando quieras importar flujos de trabajo existentes de ComfyUI, exponer solo los parámetros importantes, ejecutarlos desde el chat o tareas de agentes, y gestionar todo a través de una capa de flujo de trabajo consistente.
 
 | Ideal para | Lo que obtienes |
 |------------|-----------------|
-| Usuarios de OpenClaw, Codex y Claude Code | Una capa de flujo de trabajo ComfyUI que los agentes pueden llamar de forma segura |
+| Usuarios de OpenClaw, Hermes Agent, Codex y Claude Code | Una capa de flujo de trabajo ComfyUI que los agentes pueden llamar de forma segura |
 | Propietarios de flujos de trabajo ComfyUI existentes | Una forma limpia de reutilizar flujos de trabajo exportados sin exponer el grafo completo |
 | Configuraciones multi-máquina | Un namespace unificado para servidores ComfyUI locales y remotos |
 | Usuarios que desean configuración y pruebas visuales | Una Web UI opcional para configurar, previsualizar y validar flujos de trabajo antes de que los agentes los usen |
@@ -111,6 +113,22 @@ cd comfyui-skill
 cd ~/.codex/skills
 git clone https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw.git comfyui-skill
 cd comfyui-skill
+```
+
+</details>
+
+<details>
+<summary><strong>Para Hermes Agent</strong></summary>
+
+```bash
+cd ~/.hermes/skills/creative
+git clone https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw.git comfyui-skill-openclaw
+cd comfyui-skill-openclaw
+```
+
+Or install via Hermes CLI (once the PR is merged):
+```bash
+hermes skills install comfyui-skill-openclaw
 ```
 
 </details>
@@ -422,3 +440,5 @@ Consulta [CHANGELOG.md](./CHANGELOG.md) para el historial completo de versiones.
 - [Español README](./README.es.md)
 - [ComfyUI Skill CLI](https://github.com/HuangYuChuh/ComfyUI_Skill_CLI)
 - [Frontend Repository](https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw-frontend)
+- [Hermes Agent](https://github.com/NousResearch/hermes-agent) — plataforma de agentes AI compatible
+- [agentskills.io](https://agentskills.io) — estándar abierto de formato de habilidades

@@ -3,7 +3,7 @@
 
   <h1>ComfyUI Skills for OpenClaw</h1>
 
-  <p><strong>更适合 Agent 调用的 ComfyUI 工作流技能层，适用于 OpenClaw、Codex、Claude Code 以及其他 Agent。</strong></p>
+  <p><strong>更适合 Agent 调用的 ComfyUI 工作流技能层，适用于 OpenClaw、Hermes Agent、Codex、Claude Code 以及其他 Agent。</strong></p>
 
   <p>
     这个项目可以把 ComfyUI 工作流变成可调用的 skill，并以一个更适合 Agent 使用的 CLI 作为主接口，
@@ -16,6 +16,8 @@
     <a href="https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw/stargazers"><img src="https://img.shields.io/github/stars/HuangYuChuh/ComfyUI_Skills_OpenClaw?style=flat&color=EAB308&logo=github" alt="GitHub stars"></a>
     <a href="https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw/network/members"><img src="https://img.shields.io/github/forks/HuangYuChuh/ComfyUI_Skills_OpenClaw?style=flat&color=F97316&logo=github" alt="GitHub forks"></a>
     <a href="https://www.python.org/"><img src="https://img.shields.io/static/v1?label=Python&message=3.10%2B&color=3B82F6&style=flat&logo=python&logoColor=white" alt="Python 3.10+"></a>
+    <a href="https://github.com/NousResearch/hermes-agent"><img src="https://img.shields.io/static/v1?label=Hermes%20Agent&message=compatible&color=8B5CF6&style=flat&logo=data%3Aimage/svg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNMTIgMmExMCAxMCAwIDEgMCAwIDIwIDEwIDEwIDAgMCAwIDAtMjBaIi8%2BPHBhdGggZD0iTTggMTRzMS41IDIgNCAyczQtMiA0LTIiLz48L3N2Zz4%3D&logoColor=white" alt="Hermes Agent Compatible"></a>
+    <a href="https://agentskills.io"><img src="https://img.shields.io/static/v1?label=agentskills.io&message=standard&color=06B6D4&style=flat" alt="agentskills.io standard"></a>
   </p>
 
   <p>
@@ -43,13 +45,13 @@
 
 ComfyUI Skills for OpenClaw 是一个更适合 Agent 调用的桥接层，用来把 ComfyUI 工作流封装成 Agent 可调用的技能。
 
-它不是让 Agent 直接去操作原始的 ComfyUI graph，而是通过 CLI 和基于 schema 的参数映射，为每个工作流提供一个更清晰、更可控的调用接口。只要 Agent 能执行 Shell 命令，就可以与它配合使用，包括 OpenClaw、Codex、Claude Code 等。
+它不是让 Agent 直接去操作原始的 ComfyUI graph，而是通过 CLI 和基于 schema 的参数映射，为每个工作流提供一个更清晰、更可控的调用接口。只要 Agent 能执行 Shell 命令，就可以与它配合使用，包括 OpenClaw、Hermes Agent、Codex、Claude Code 等。兼容 [agentskills.io](https://agentskills.io) 开放标准。
 
 当你想导入已有的 ComfyUI 工作流、只暴露必要参数、在聊天或 Agent 任务中直接调用，并把整个调用流程统一到一个稳定的工作流层时，这个项目就很适合。
 
 | 适合谁 | 你能得到什么 |
 |--------|--------------|
-| OpenClaw、Codex、Claude Code 用户 | 一个 Agent 可以安全调用的 ComfyUI 工作流层 |
+| OpenClaw、Hermes Agent、Codex、Claude Code 用户 | 一个 Agent 可以安全调用的 ComfyUI 工作流层 |
 | 已有 ComfyUI 工作流的用户 | 不暴露完整 graph 的前提下复用导出工作流 |
 | 多机部署场景 | 用统一命名空间管理本地和远程 ComfyUI 服务器 |
 | 希望可视化配置和测试的用户 | 一个可选的 Web UI，用来配置、预览和验证工作流，再交给 Agent 使用 |
@@ -124,6 +126,22 @@ cd comfyui-skill
 cd ~/.codex/skills
 git clone https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw.git comfyui-skill
 cd comfyui-skill
+```
+
+</details>
+
+<details>
+<summary><strong>Hermes Agent 环境</strong></summary>
+
+```bash
+cd ~/.hermes/skills/creative
+git clone https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw.git comfyui-skill-openclaw
+cd comfyui-skill-openclaw
+```
+
+Or install via Hermes CLI (once the PR is merged):
+```bash
+hermes skills install comfyui-skill-openclaw
 ```
 
 </details>
@@ -492,3 +510,5 @@ comfyui-skill deps check <workflow_id>
 - [Español README](./README.es.md)
 - [ComfyUI Skill CLI](https://github.com/HuangYuChuh/ComfyUI_Skill_CLI)
 - [Frontend Repository](https://github.com/HuangYuChuh/ComfyUI_Skills_OpenClaw-frontend)
+- [Hermes Agent](https://github.com/NousResearch/hermes-agent) — 兼容的 AI Agent 平台
+- [agentskills.io](https://agentskills.io) — 开放技能格式标准
